@@ -1,0 +1,8 @@
+[package]
+name = "rust-web-framework"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+flate2 = "1.1.0"
+http = "1.3.1"
