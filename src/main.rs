@@ -189,27 +189,8 @@ fn handle_connection (mut stream: TcpStream) {
 fn main() {
     // You can use print statements as follows for debugging, they'll be visible when running tests.
     println!("Logs from your program will appear here!");
-
     let mut server = Server { port: 5050, host: None };
-
     let app = server.init();
-    match app {
-        Ok(listener) => {
-            println!("Server has been running at address");
-
-            for stream in listener.incoming() {
-                match stream {
-                    Ok(stream) => {
-                        thread::spawn(|| handle_connection(stream));
-                    }
-                    Err(e) => {
-                        println!("error: {}", e);
-                    }
-                }
-            }
-        },
-        Err(e) => eprintln!("Error when init server: {}",e)
-    }
 }
 
 
