@@ -1,13 +1,16 @@
 mod utils;
 mod request;
 mod server;
+mod router;
+mod response;
+mod Error;
+mod thread_pool;
 
 #[allow(unused_imports)]
 use std::{collections::HashMap, io::{ Read, Write, BufReader, BufRead}, net::TcpStream};
-use std::{net::TcpListener};
-use std::{thread, fs, env };
+use std::{ fs, env };
 use utils::compression::compress_string;
-
+use crate::server::Server;
 
 #[derive(Debug)]
 #[allow(dead_code)]
@@ -182,12 +185,9 @@ fn handle_connection (mut stream: TcpStream) {
 }
 
 fn main() {
-    // You can use print statements as follows for debugging, they'll be visible when running tests.
-    println!("Logs from your program will appear here!");
-    let mut server = Server::new(Some(5050), Some("0.0.0.0"), Some(5));
-    let app = server.init();
+    println!("Logs from server will appear here!");
+    let mut server = Server::new(Some(5050), Some("0.0.0.0"), Some(4));
+    if let Err(e) = server.listen() {
+        panic!("{}",e)
+    }
 }
-
-
-
-

@@ -10,24 +10,10 @@ pub mod compression {
         encoder.finish()
     }
 
-    pub fn decompress_string(compress_data: &[u8]) ->  Result<String, std::io::Error> {
+    pub fn _decompress_string(compress_data: &[u8]) ->  Result<String, std::io::Error> {
         let mut encoder = GzDecoder::new(compress_data);
         let mut decompressed_data = String::new();
         encoder.read_to_string(&mut decompressed_data)?;
         Ok(decompressed_data)
     }
-}
-
-pub mod http {
-   pub enum Methods {
-       GET,
-       POST,
-       PUT,
-       DELETE,
-       OPTIONS,
-       TRACE,
-       HEAD,
-       PATCH,
-       CONNECT,
-   }
 }
