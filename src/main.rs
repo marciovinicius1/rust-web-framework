@@ -3,7 +3,7 @@ mod request;
 mod server;
 mod router;
 mod response;
-mod Error;
+mod error;
 mod thread_pool;
 
 #[allow(unused_imports)]
