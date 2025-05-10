@@ -5,9 +5,8 @@ use std::error::Error;
 use std::io::{BufReader, Read, Write};
 use std::net::SocketAddr;
 use std::net::{Ipv4Addr};
-
+// use crate::handle_connection;
 use crate::response::Response;
-use crate::handle_connection;
 use crate::request::Request;
 use crate::router::Router;
 use crate::thread_pool::ThreadPool;
@@ -46,34 +45,17 @@ impl Server {
         let addr = SocketAddr::from((self.host, self.port));
         let listener = TcpListener::bind(addr)?;
         let thread_pool = ThreadPool::new(self.threads)?;
+
+
         loop {
             let (stream, _) = listener.accept()?;
+            let router_copy = self.router.clone();
+            
             println!("Server has been running at address: {}", addr);
-            thread_pool.execute(|| handle_connection(stream));
+            thread_pool.execute(|| handle_connection(stream, router_copy));
         }
     }
-
-    fn handle_connection(mut stream: TcpStream, router: Router) -> Result<(), ServerError> {
-        let mut reader = BufReader::new(&stream);
-        let mut buffer = [0; 1024];
-        let content_len = reader.read(&mut buffer);
-
-        let string_buffer = match content_len {
-            Ok(len) => String::from_utf8((&buffer[..len]).to_vec())
-                .map_err(|_| ServerError::ReadTCPStreamError(String::from("Cannot read data from TCP Stream.")))?,
-            Err(_) => {
-                return Err(ServerError::ReadTCPStreamError(String::from("Cannot read data from TCP Stream.")));
-            }
-        };
-
-        let request = Request::raw_req(string_buffer);
-        let response = router.route(request);
-
-        stream.write_all(response.to_http().as_bytes()).unwrap();
-        Ok(())
-    }
 }
-
 
 impl Server {
     pub fn get<F>(&mut self, path: &str, handler: F)
@@ -81,4 +63,32 @@ impl Server {
     {
         self.router.add_route("GET", path, handler);
     }
+}
+
+const TCP_BUFFER_SIZE: usize = 1024;
+
+fn handle_connection(mut stream: TcpStream, router: Router) -> Result<(), ServerError> {
+    let request = read_request(&stream)?;
+    let response = router.route(request);
+    send_response(&mut stream, response)?;
+    Ok(())
+}
+
+fn read_request(stream: &TcpStream) -> Result<Request, ServerError> {
+    let mut reader = BufReader::new(stream);
+    let mut buffer = [0; TCP_BUFFER_SIZE];
+
+    let bytes_read = reader.read(&mut buffer)
+        .map_err(|_| ServerError::ReadTCPStreamError(String::from("Failed to read from TCP Stream")))?;
+
+    let raw_request = String::from_utf8((&buffer[..bytes_read]).to_vec())
+        .map_err(|_| ServerError::ReadTCPStreamError(String::from("Invalid UTF-8 sequence")))?;
+
+    Ok(Request::raw_req(raw_request))
+}
+
+fn send_response(stream: &mut TcpStream, response: Response) -> Result<(), ServerError> {
+    stream.write_all(response.to_http().as_bytes())
+        .map_err(|_| ServerError::ReadTCPStreamError(String::from("Failed to write response")))?;
+    Ok(())
 }

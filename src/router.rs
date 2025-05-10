@@ -6,6 +6,7 @@ use crate::request::Request;
 use crate::response::Response;
 
 type Handler = Arc<dyn Fn(Request) -> Response + Send + Sync>;
+#[derive(Clone)]
 pub struct Router {
     routes: HashMap<String, Handler>,
 }
