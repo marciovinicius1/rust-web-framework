@@ -10,6 +10,7 @@ mod thread_pool;
 use std::{collections::HashMap, io::{ Read, Write, BufReader, BufRead}, net::TcpStream};
 use std::{ fs, env };
 use utils::compression::compress_string;
+use crate::response::Response;
 use crate::server::Server;
 
 #[derive(Debug)]
@@ -187,6 +188,15 @@ fn handle_connection (mut stream: TcpStream) {
 fn main() {
     println!("Logs from server will appear here!");
     let mut server = Server::new(Some(5050), Some("0.0.0.0"), Some(4));
+
+    server.get("/", |_req| {
+        Response::text("Hello from Rust Web Framework!")
+    });
+
+    server.get("/about", |_req| {
+        Response::text("This is the about page.")
+    });
+    
     if let Err(e) = server.listen() {
         panic!("{}",e)
     }
