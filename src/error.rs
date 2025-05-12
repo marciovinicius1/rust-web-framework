@@ -1,5 +1,5 @@
 use std::collections::HashMap;
 struct Error {
-    Erros: HashMap<String, String>
+    error: HashMap<String, String>
 }
 

@@ -84,7 +84,7 @@ fn read_request(stream: &TcpStream) -> Result<Request, ServerError> {
     let raw_request = String::from_utf8((&buffer[..bytes_read]).to_vec())
         .map_err(|_| ServerError::ReadTCPStreamError(String::from("Invalid UTF-8 sequence")))?;
 
-    Ok(Request::raw_req(raw_request))
+    Ok(Request::from_string(raw_request))
 }
 
 fn send_response(stream: &mut TcpStream, response: Response) -> Result<(), ServerError> {

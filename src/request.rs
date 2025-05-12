@@ -38,7 +38,7 @@ impl StatusLine {
 
 impl Request {
     /// Parse string into a request structure.
-    pub fn raw_req (mut buffer: String) -> Self {
+    pub fn from_string (mut buffer: String) -> Self {
         buffer = buffer.replace("\r", "");
         let string_buffer: Vec<&str> = buffer.split('\n').collect();
 
