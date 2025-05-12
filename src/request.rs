@@ -50,7 +50,7 @@ impl Request {
             let header_item: Vec<&str> = header_item.split(": ").collect();
             headers.insert(header_item[0].to_string(), header_item[1].to_string());
         }
-
+        
         let body = String::from(string_buffer[string_buffer.len() -1]);
 
         Request {

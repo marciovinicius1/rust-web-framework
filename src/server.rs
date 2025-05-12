@@ -5,11 +5,11 @@ use std::error::Error;
 use std::io::{BufReader, Read, Write};
 use std::net::SocketAddr;
 use std::net::{Ipv4Addr};
-// use crate::handle_connection;
 use crate::response::Response;
 use crate::request::Request;
 use crate::router::Router;
 use crate::thread_pool::ThreadPool;
+
 #[derive(Error, Debug)]
 pub enum ServerError {
     #[error("Server Error: \nPoolCreationError: {0}")]
@@ -50,18 +50,10 @@ impl Server {
         loop {
             let (stream, _) = listener.accept()?;
             let router_copy = self.router.clone();
-            
+
             println!("Server has been running at address: {}", addr);
             thread_pool.execute(|| handle_connection(stream, router_copy));
         }
-    }
-}
-
-impl Server {
-    pub fn get<F>(&mut self, path: &str, handler: F)
-    where F: Fn(Request) -> Response + Send + Sync + 'static
-    {
-        self.router.add_route("GET", path, handler);
     }
 }
 
@@ -91,4 +83,18 @@ fn send_response(stream: &mut TcpStream, response: Response) -> Result<(), Serve
     stream.write_all(response.to_http().as_bytes())
         .map_err(|_| ServerError::ReadTCPStreamError(String::from("Failed to write response")))?;
     Ok(())
+}
+
+impl Server {
+    pub fn get<F>(&mut self, path: &str, handler: F)
+    where F: Fn(Request) -> Response + Send + Sync + 'static
+    {
+        self.router.add_route("GET", path, handler);
+    }
+
+    pub fn post<F>(&mut self, path: &str, handler: F)
+    where F: Fn(Request) -> Response + Send + Sync + 'static
+    {
+        self.router.add_route("POST", path, handler);
+    }
 }

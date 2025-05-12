@@ -1,7 +1,6 @@
 //! Routes Store and Management
 use std::collections::HashMap;
 use std::sync::Arc;
-
 use crate::request::Request;
 use crate::response::Response;
 
