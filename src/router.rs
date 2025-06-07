@@ -1,14 +1,16 @@
 //! Routes Store and Management
 use std::collections::HashMap;
-use std::sync::Arc;
-use crate::request::{Request};
+use crate::request::{Request, Method};
 use crate::response::Response;
+use std::sync::Arc;
+
 
 pub type Handler = Arc<dyn Fn(Request) -> Response + Send + Sync>;
 #[derive(Clone)]
 pub struct Router {
     routes: HashMap<String, Handler>,
 }
+
 impl Router {
     pub fn new() -> Self {
         Router {

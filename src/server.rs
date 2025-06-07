@@ -5,10 +5,14 @@ use std::error::Error;
 use std::io::{BufReader, Read, Write};
 use std::net::SocketAddr;
 use std::net::{Ipv4Addr};
+use std::sync::Arc;
+
 use crate::response::Response;
 use crate::request::{Request};
 use crate::router::Router;
 use crate::thread_pool::ThreadPool;
+
+
 
 #[derive(Error, Debug)]
 pub enum ServerError {
@@ -24,7 +28,7 @@ pub struct Server {
     host: Ipv4Addr,
     port: u16,
     threads: usize,
-    router: Router,
+    router: Arc<Router>,
 }
 
 impl Server {
@@ -37,7 +41,7 @@ impl Server {
             host: host.unwrap_or(default_host).parse::<Ipv4Addr>().unwrap(),
             port: port.unwrap_or(default_port),
             threads: threads.unwrap_or(default_thread_size),
-            router: Router::new()
+            router: Arc::new(Router::new())
         }
     }
 
@@ -45,21 +49,22 @@ impl Server {
         let addr = SocketAddr::from((self.host, self.port));
         let listener = TcpListener::bind(addr)?;
         let thread_pool = ThreadPool::new(self.threads)?;
+        println!("Server has been running at address: {}", addr);
 
 
         loop {
-            let (stream, _) = listener.accept()?;
-            let router_copy = self.router.clone();
+            let (stream, connection_addr) = listener.accept()?;
+            println!("Nova conexão de: {}", connection_addr);
+            let router_thread = Arc::clone(&self.router);
 
-            println!("Server has been running at address: {}", addr);
-            thread_pool.execute(|| handle_connection(stream, router_copy));
+            thread_pool.execute(|| handle_connection(stream, router_thread));
         }
     }
 }
 
 const TCP_BUFFER_SIZE: usize = 1024;
 
-fn handle_connection(mut stream: TcpStream, router: Router) -> Result<(), ServerError> {
+fn handle_connection(mut stream: TcpStream, router: Arc<Router>) -> Result<(), ServerError> {
     let request = read_request(&stream)?;
     let response = router.route(request);
     send_response(&mut stream, response)?;
@@ -89,12 +94,21 @@ impl Server {
     pub fn get<F>(&mut self, path: &str, handler: F)
     where F: Fn(Request) -> Response + Send + Sync + 'static
     {
-        self.router.add_route("GET", path, handler);
+        if let Some(router_mut) = Arc::get_mut(&mut self.router) {
+            router_mut.add_route("GET", path, handler);
+        } else {
+            panic!("server/get(): Was not possible add route: The route already being sharing.");
+        }
     }
 
     pub fn post<F>(&mut self, path: &str, handler: F)
     where F: Fn(Request) -> Response + Send + Sync + 'static
     {
-        self.router.add_route("POST", path, handler);
+        if let Some(router_mut) = Arc::get_mut(&mut self.router) {
+            router_mut.add_route("POST", path, handler);
+        } else {
+            panic!("server/get(): Was not possible add route: The route already being sharing.");
+        }
     }
+
 }
