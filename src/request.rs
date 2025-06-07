@@ -12,7 +12,8 @@ pub struct StatusLine {
     pub http_version: String,
 }
 
-enum Methods {
+#[derive(Debug, Eq, Hash, PartialEq)]
+pub enum Method {
     GET,
     POST,
     PUT,

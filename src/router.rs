@@ -1,10 +1,10 @@
 //! Routes Store and Management
 use std::collections::HashMap;
 use std::sync::Arc;
-use crate::request::Request;
+use crate::request::{Request};
 use crate::response::Response;
 
-type Handler = Arc<dyn Fn(Request) -> Response + Send + Sync>;
+pub type Handler = Arc<dyn Fn(Request) -> Response + Send + Sync>;
 #[derive(Clone)]
 pub struct Router {
     routes: HashMap<String, Handler>,
@@ -18,7 +18,7 @@ impl Router {
     pub fn add_route<F> (&mut self, method: &str, path: &str, handler: F) where
     F: Fn(Request) -> Response + Send + Sync + 'static,
     {
-        let key = format!("{} {}", method, path);
+        let key = format!("{} {}", method,path);
         self.routes.insert(key, Arc::new(handler));
     }
     pub fn route (&self, req: Request) -> Response {

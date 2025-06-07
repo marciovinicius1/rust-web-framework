@@ -6,7 +6,7 @@ use std::io::{BufReader, Read, Write};
 use std::net::SocketAddr;
 use std::net::{Ipv4Addr};
 use crate::response::Response;
-use crate::request::Request;
+use crate::request::{Request};
 use crate::router::Router;
 use crate::thread_pool::ThreadPool;
 

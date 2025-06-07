@@ -5,6 +5,7 @@ mod router;
 mod response;
 mod error;
 mod thread_pool;
+mod radix_tree;
 
 #[allow(unused_imports)]
 use std::{collections::HashMap, io::{ Read, Write, BufReader, BufRead}, net::TcpStream};
