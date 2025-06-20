@@ -4,15 +4,16 @@ pub struct Request {
     pub status_line: StatusLine,
     pub headers: HashMap<String, String>,
     pub body: String,
+    pub params: HashMap<String, String>,
+
 }
 pub struct StatusLine {
     pub method: String,
     pub path: String,
-    // pub params: HashMap<String, String>,
     pub http_version: String,
 }
 
-#[derive(Debug, Eq, Hash, PartialEq)]
+#[derive(Debug, Eq, Hash, PartialEq, Clone, Copy)]
 pub enum Method {
     GET,
     POST,
@@ -55,6 +56,7 @@ impl Request {
         let body = String::from(string_buffer[string_buffer.len() -1]);
 
         Request {
+            params: HashMap::new(),
             status_line,
             headers,
             body,

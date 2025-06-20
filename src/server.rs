@@ -12,8 +12,6 @@ use crate::request::{Request};
 use crate::router::Router;
 use crate::thread_pool::ThreadPool;
 
-
-
 #[derive(Error, Debug)]
 pub enum ServerError {
     #[error("Server Error: \nPoolCreationError: {0}")]

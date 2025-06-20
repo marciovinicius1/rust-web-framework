@@ -1,8 +1,18 @@
 use std::collections::HashMap;
 use std::sync::Arc;
+use thiserror::Error;
 use crate::request::{Method, Request};
 use crate::router::Handler;
 use crate::response::Response;
+
+#[derive(Error, Debug)]
+pub enum RouterError {
+    #[error("Router Error: \nRouteNotFound: {0}")]
+    MatchingRouteError(String),
+    #[error("Router Error: \n: {0}")]
+    MatchingHandlerError(String),
+}
+
 pub struct RadixTree {
     pub root: Node
 }
@@ -67,13 +77,12 @@ impl Node {
             current_node = current_node
                 .childrens
                 .last_mut()
-                .expect("Acabamos de adicionar este nó");
+                .expect("");
         }
-
         current_node.handlers.insert(method, Arc::new(handler));
     }
 
-    pub fn match_route<F>(&mut self, path: &str, method: Method) -> RouteResponse where
+    pub fn match_route<F>(&self, path: &str, method: Method) -> Result<RouteResponse, RouterError> where
         F: Fn(Request) -> Response + Send + Sync + 'static,
     {
         let segments = path.split('/').filter(|s| !s.is_empty()).enumerate();
@@ -95,18 +104,18 @@ impl Node {
                     params.insert(param_key.clone(), segment.to_string());
                 }
                 _ => {
-                    todo!("no match route");
+                    return Err(RouterError::MatchingRouteError("route not found".to_string()))
                 }
             }
         }
 
         if let Some(handler) = current_node.handlers.get(&method) {
-            RouteResponse {
+            Ok(RouteResponse {
                 handler,
                 params,
-            }
+            })
         } else {
-            todo!("no match handler")
+            Err(RouterError::MatchingHandlerError("handler not found".to_string()))
         }
     }
 }
