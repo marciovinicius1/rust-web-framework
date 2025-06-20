@@ -25,8 +25,10 @@ I'm inspired by the JavaScript frameworks I've used throughout my career. <br>
     - [ ] Asynchronous
     - [ ] Graceful Shutdown
 - [ ] Routes  
-  - [ ] Radix Tree
-  - [ ] Safe Thread Share
+  - [x] Radix Tree
+  - [x] Safe Thread Share
+  - [x] Route Add
+  - [x] Route Match
 - [ ] Middlewares
 - [ ] Database Plugin
   - [ ] Postgree
