@@ -81,32 +81,34 @@ impl Node {
         }
         current_node.handlers.insert(method, Arc::new(handler));
     }
-
-    pub fn match_route<F>(&self, path: &str, method: Method) -> Result<RouteResponse, RouterError> where
-        F: Fn(Request) -> Response + Send + Sync + 'static,
-    {
-        let segments = path.split('/').filter(|s| !s.is_empty()).enumerate();
+    pub fn match_route(&self, path: &str, method: Method) -> Result<RouteResponse, RouterError> {
+        let segments = path.split('/').filter(|s| !s.is_empty());
         let mut current_node = self;
-        let mut params: HashMap<String, String>  = HashMap::new();
+        let mut params: HashMap<String, String> = HashMap::new();
+        let mut segments_iter = segments.peekable();
 
-        for (_, segment) in segments {
-            let child_position = current_node
-                .childrens
-                .iter()
-                .position(|child| child.prefix == segment);
+        while let Some(segment) = segments_iter.next() {
+            
+            let literal_child = current_node.childrens.iter().find(|child| child.prefix == segment);
 
-            match (child_position, &current_node.param_key) {
-                (Some(pos), None) => {
-                    current_node = &mut current_node.childrens[pos];
-                    continue
-                }
-                (None, Some(param_key)) => {
-                    params.insert(param_key.clone(), segment.to_string());
-                }
-                _ => {
-                    return Err(RouterError::MatchingRouteError("route not found".to_string()))
-                }
+            if let Some(node) = literal_child {
+                current_node = node;
+                continue;
             }
+            
+            if let Some(ref param_key) = current_node.param_key {
+                params.insert(param_key.clone(), segment.to_string());
+                
+                if segments_iter.peek().is_some() {
+                    return Err(RouterError::MatchingRouteError(
+                        "O caminho continua após o parâmetro, o que não é suportado pela estrutura do router.".to_string()
+                    ));
+                }
+                
+                break;
+            }
+            
+            return Err(RouterError::MatchingRouteError(format!("Rota não encontrada no segmento '{}'", segment)));
         }
 
         if let Some(handler) = current_node.handlers.get(&method) {
@@ -115,7 +117,7 @@ impl Node {
                 params,
             })
         } else {
-            Err(RouterError::MatchingHandlerError("handler not found".to_string()))
+            Err(RouterError::MatchingHandlerError(format!("{:?}", method)))
         }
     }
 }

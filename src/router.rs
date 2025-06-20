@@ -52,20 +52,13 @@ impl Router {
                         (route_response.handler)(req)
                     }
                     Err(_) => {
-                        Response::text("404 Not Found").with_status(404)
+                        Response::text(&"404 Not Found".to_string()).with_status(404)
                     }
                 }
             }
             Err(_) => {
-                Response::text("400 Bad Request - Invalid Method").with_status(400)
+                Response::text(&"400 Bad Request - Invalid Method".to_string()).with_status(400)
             }
-        }
-        
-        let key = format!("{} {}", req.status_line.method, req.status_line.path);
-        if let Some(handler) = self.routes.get(&key) {
-            handler(req)
-        } else {
-            Response::text("404 Not Found").with_status(404)
         }
     }
 }

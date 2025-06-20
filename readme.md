@@ -1,17 +1,33 @@
 # Rust Web Framework From Scratch - WIP
-I'm building this project to learn more about HTTP servers and practice Rust.
-I'm inspired by Javascript frameworks that I used along my career. <br>
+I'm building this project to learn more about HTTP servers, how they work under the hood, and to practice Rust.
+I'm inspired by the JavaScript frameworks I've used throughout my career. <br>
 ##
 
-#### Features that I pretend to implement:  
-
+## Features I plan to implement over time
+###### Some features will be added below over time/as issues arise 😅
 - [ ] Request Handler
-- [ ] Response Handler 
+  - [ ] Methods
+    - [X] GET
+    - [X] POST
+    - [ ] UPDATE
+    - [ ] DELETE
+    - [ ] OPTIONS
+    - [ ] TRACE
+    - [ ] HEAD
+    - [ ] PATCH
+    - [ ] CONNECT
+- [ ] Response Handler
+  - [x] Text body
+  - [ ] JSON body
 - [ ] Server Module
-    - [ ] Server configuration
-    - [ ] Multithreading
+    - [x] Server configuration
+    - [x] Multithreading
     - [ ] Asynchronous
     - [ ] Graceful Shutdown
-- [ ] Routes 
+- [ ] Routes  
+  - [ ] Radix Tree
+  - [ ] Safe Thread Share
 - [ ] Middlewares
-- [ ] Database Plugin (SQLite)
+- [ ] Database Plugin
+  - [ ] Postgree
+  - [ ] SQLite
