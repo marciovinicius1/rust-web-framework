@@ -16,7 +16,6 @@ fn main() {
 
     server.get("/user/:id", |_req| {
         match _req.params.get("id") {
-            
             Some(id) => Response::text(id),
             None => Response::text(&"Missing user id".to_string()).with_status(400)
         }
