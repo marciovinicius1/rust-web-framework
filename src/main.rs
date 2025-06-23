@@ -21,6 +21,12 @@ fn main() {
         }
     });
 
+    server.get("/user/:id/details/:name", |_req| {
+        let name = _req.params.get("name").unwrap();
+        let id = _req.params.get("id").unwrap();
+        Response::text(&format!("{} {}", name, id))
+    });
+
     server.get("/about", |_req| {
         Response::text(&"Missing user id".to_string())
     });
