@@ -1,12 +1,18 @@
 [package]
-name = "rust-web-framework"
+name = "grinders_tech_http_server"
 version = "0.1.0"
 edition = "2021"
+authors = ["Márcio Vinícius <maricoviniciusdev@gmail.com>"]
+description = "A web framework to create simple http servers."
+license = "MIT"
+repository = "https://github.com/marciovinicius1/rust-web-framework"
+keywords = ["http", "web-server", "rust"]
+categories = ["web-programming", "network-programming"]
 
 [dependencies]
-flate2 = "1.1.0"
+tokio = { version = "1.45.1", features = ["full"] }
 http = "1.3.1"
-futures = { version = "0.3.31", features = ["thread-pool"] }
-anyhow = "1.0.98"
 thiserror = "2.0.12"
 regex = "1.11.1"
+anyhow = "1.0.98"
+flate2 = "1.1.0"
