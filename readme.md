@@ -1,4 +1,4 @@
-# Projeto: HTTP Server em Rust
+# Projeto: WEB Framework to build HTTP Servers - Rust
 
 ## Descrição Geral
 Este projeto consiste em um servidor HTTP desenvolvido em Rust, projetado para oferecer alta performance e flexibilidade, aproveitando conceitos como programação assíncrona e árvores radix. O objetivo principal do projeto é criar um servidor que permite rotas dinâmicas e eficientes, tornando-o uma base sólida para APIs e aplicações web.
